@@ -1062,16 +1062,68 @@ console.log(cv('\n──ZAO DATA─●'));
   }
 })();
 
-// ─── Suppress unhandled promise rejections ────────────────────
+// ─── Global unhandled rejection handler ──────────────────────
+// Catches promise rejections that escape .catch() — most commonly
+// from FCA-UNO's internal MQTT promise chains. These are logged
+// for debugging but do NOT crash the process (non-fatal).
 process.on('unhandledRejection', (reason, promise) => {
-  const msg = reason instanceof Error ? reason.message : String(reason || 'unknown');
-  const logger = global.loggeryuki;
-  if (logger) {
-    logger.log([
-      { message: '[ FCA-ERROR ] > ', color: ['red', 'cyan'] },
-      { message: `Unhandled promise rejection (non-fatal): ${msg}`, color: 'white' }
+  const ts  = new Date().toISOString();
+  const log = global.loggeryuki;
+
+  let msg   = 'unknown';
+  let stack = '';
+
+  if (reason instanceof Error) {
+    msg   = reason.message || String(reason);
+    stack = reason.stack   || '';
+  } else if (reason && typeof reason === 'object') {
+    msg   = reason.message || reason.error || reason.description || JSON.stringify(reason);
+    stack = reason.stack   || '';
+  } else {
+    msg = String(reason ?? 'unknown');
+  }
+
+  // Trim stack to first 3 frames to keep logs readable
+  const stackHint = stack
+    ? '\n  ' + stack.split('\n').slice(1, 4).map(l => l.trim()).join('\n  ')
+    : '';
+
+  const fullMsg = `[${ts}] Unhandled promise rejection (non-fatal): ${msg}${stackHint}`;
+
+  if (log) {
+    log.log([
+      { message: '[ UNHANDLED-REJECTION ]: ', color: ['red', 'cyan'] },
+      { message: fullMsg, color: 'white' }
     ]);
   } else {
-    console.error('[UNHANDLED REJECTION]', msg);
+    console.error('[UNHANDLED-REJECTION]', fullMsg);
   }
+});
+
+// ─── Global uncaught exception handler ───────────────────────
+// Catches synchronous throws that escape all try/catch blocks.
+// Logs the error and lets the watchdog decide whether to restart
+// rather than crashing silently or abruptly.
+process.on('uncaughtException', (err, origin) => {
+  const ts  = new Date().toISOString();
+  const log = global.loggeryuki;
+
+  const msg   = (err && err.message) ? err.message : String(err ?? 'unknown');
+  const stack = (err && err.stack)   ? err.stack   : '';
+
+  const stackHint = stack
+    ? '\n  ' + stack.split('\n').slice(1, 4).map(l => l.trim()).join('\n  ')
+    : '';
+
+  const fullMsg = `[${ts}] Uncaught exception (origin: ${origin || 'uncaughtException'}): ${msg}${stackHint}`;
+
+  if (log) {
+    log.log([
+      { message: '[ UNCAUGHT-EXCEPTION ]: ', color: ['red', 'cyan'] },
+      { message: fullMsg, color: 'white' }
+    ]);
+  } else {
+    console.error('[UNCAUGHT-EXCEPTION]', fullMsg);
+  }
+  // Do NOT call process.exit() — let the watchdog handle restarts
 });
