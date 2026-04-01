@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const GEMINI_API_KEY = "AIzaSyCmHRZU-cixoa6Us0ValgjKPhAX-W1-2vY";
+const GEMINI_API_KEY = "AIzaSyA4Y30ERau0ADaFf_RMuZsESC8aEffAIp0";
 
 module.exports.config = {
   name: "زاو",
