@@ -252,7 +252,15 @@ module.exports = function ({ api, models, Users, Threads, Currencies, globalData
       Obj.Currencies = Currencies;
       Obj.permssion = permssion;
       Obj.getText = getText2;
-      command.run(Obj);
+      const runResult = command.run(Obj);
+      if (runResult && typeof runResult.catch === 'function') {
+        runResult.catch(e => {
+          logger.log([
+            { message: '[ CMD-PROMISE ]: ', color: ['red', 'cyan'] },
+            { message: `Unhandled rejection in command "${commandName}": ${e && e.message ? e.message : String(e)}`, color: 'white' }
+          ]);
+        });
+      }
       timestamps.set(senderID, dateNow);
       if (DeveloperMode == !![])
         logger(
