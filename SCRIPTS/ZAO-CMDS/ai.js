@@ -1,14 +1,14 @@
 const axios = require("axios");
 
-const CHIPP_API_KEY = "live_a25d1f673602fe880167183b21fd14a6649ad00138e91826068de74a50ba01df";
-const CHIPP_MODEL = "-10042512";
+const GROQ_API_KEY = "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";
+const GROQ_MODEL = "openai/gpt-oss-120b";
 
 module.exports.config = {
   name: "زاو",
   version: "2.0.0",
   hasPermssion: 0,
   credits: "لحواك كحبة تسرقني نك مك",
-  description: "محادثة مع Chipp AI",
+  description: "محادثة مع Groq AI",
   commandCategory: "ذكاء اصطناعي",
   usages: "زاو [رسالتك]",
   cooldowns: 3
@@ -114,7 +114,7 @@ const SYSTEM_PROMPT = `##  Identity
 
 `;
 
-async function askChipp(history) {
+async function askGroq(history) {
   const messages = [
     { role: "system", content: SYSTEM_PROMPT },
     ...history.map(msg => ({
@@ -124,16 +124,17 @@ async function askChipp(history) {
   ];
 
   const res = await axios.post(
-    "https://app.chipp.ai/api/v1/chat/completions",
+    "https://api.groq.com/openai/v1/chat/completions",
     {
-      model: CHIPP_MODEL,
+      model: GROQ_MODEL,
       messages: messages,
-      stream: false
+      max_tokens: 512,
+      temperature: 0.9
     },
     {
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${CHIPP_API_KEY}`
+        "Authorization": `Bearer ${GROQ_API_KEY}`
       }
     }
   );
@@ -156,7 +157,7 @@ module.exports.handleEvent = async function ({ api, event }) {
   if (session.history.length > 20) session.history = session.history.slice(-20);
 
   try {
-    const reply = await askChipp(session.history);
+    const reply = await askGroq(session.history);
     session.history.push({ role: "assistant", content: reply });
 
     api.sendMessage(reply, threadID, (err, info) => {
@@ -183,7 +184,7 @@ module.exports.run = async function ({ api, event, args }) {
   if (session.history.length > 20) session.history = session.history.slice(-20);
 
   try {
-    const reply = await askChipp(session.history);
+    const reply = await askGroq(session.history);
     session.history.push({ role: "assistant", content: reply });
 
     api.sendMessage(reply, threadID, (err, info) => {
