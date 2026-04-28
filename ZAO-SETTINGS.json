@@ -32,36 +32,6 @@
         "_note": "يفحص MQTT كل 2-5 دقائق (عشوائي). يعيد تشغيله إذا صمت أكثر من silentTimeoutMinutes. يستخدم backoff تصاعدي."
     },
 
-    "notiWhenListenMqttError": {
-        "minIntervalMinutes": 10,
-        "telegram": {
-            "enable": false,
-            "botToken": "",
-            "chatId": ""
-        },
-        "discordHook": {
-            "enable": false,
-            "webhookUrl": ""
-        },
-        "_note": "Pushes session-expired / listener errors to Telegram and/or Discord webhook. Throttled. Channels stay disabled until enable=true and credentials are filled."
-    },
-
-    "autoUptime": {
-        "enable": false,
-        "url": "",
-        "intervalSeconds": 180,
-        "_note": "Optional external-URL ping for free hosts (Render/Glitch/Replit deploys). Leave url blank to auto-detect from REPLIT_DEV_DOMAIN / REPL_SLUG. Off by default — Main.js already pings localhost every 10 s."
-    },
-
-    "autoLock": {
-        "enable": true,
-        "maxCommands": 15,
-        "windowSeconds": 30,
-        "unlockAfterMinutes": 10,
-        "notifyAdmins": true,
-        "_note": "Anti-raid guard. If non-admin command attempts exceed maxCommands within windowSeconds, the bot auto-locks (admins always bypass). Set unlockAfterMinutes=0 to require manual unlock via panel POST /bot/lock {value:false}."
-    },
-
     "reactUnsend": {
         "enable": true,
         "onlyAdmin": true,
@@ -93,13 +63,7 @@
     "BOTNAME": "✺ ⚆  -- ➢ ZAO✸  ⟽  ",
     "PREFIX": ".",
     "ADMINBOT": [
-        "61573475981606",
-        "",
-        "",
-        "",
-        "",
-        "", 
-        ""
+        "61573475981606"
     ],
     "BOTID": "",
     "OWNER": "⋕ 𝗖𝗿͡𝗲𝗮͜𝘁𝗼𝗿 ‹〄› 𝐒𝖆̶𝖎̶ ₰",
@@ -143,22 +107,18 @@
     "PASSWORD": "Yassin_2026",
     "FCAOption": {
         "forceLogin": false,
-        "online": true,
         "listenEvents": true,
         "selfListen": false,
-        "autoMarkRead": false,
-        "autoMarkDelivery": false,
+        "autoMarkRead": true,
         "autoReconnect": true,
         "simulateTyping": true,
-        "randomUserAgent": false,
+        "randomUserAgent": true,
         "persona": "desktop",
-        "maxConcurrentRequests": 5,
-        "maxRequestsPerMinute": 50,
-        "requestCooldownMs": 60000,
+        "maxConcurrentRequests": 4,
+        "maxRequestsPerMinute": 30,
+        "requestCooldownMs": 65000,
         "errorCacheTtlMs": 300000,
-        "logging": false,
-        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-        "_note": "Tuned to match the long-lived Holo/White profile. autoMarkRead/autoMarkDelivery=false drastically reduces FB API surface (each incoming msg used to spawn an extra read-receipt request — major detection vector). randomUserAgent=false because we already pin a fixed UA."
+        "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
     },
     "nkxModern": {
         "enabled": true,
@@ -338,10 +298,6 @@
         "pingMinIntervalMin": 8,
         "pingMaxIntervalMin": 18,
         "saveCookiesIntervalHours": 2,
-        "refreshDtsgIntervalHours": 48,
-        "enableNotificationVisit": true,
-        "notiMinIntervalMin": 60,
-        "notiMaxIntervalMin": 180,
-        "_note": "pingMin/MaxIntervalMin actually drive the ping schedule (was hard-coded to 5-10 before). enableNotificationVisit=true sends a periodic notifications GraphQL query to look more like a real desktop user."
+        "refreshDtsgIntervalHours": 48
     }
 }
